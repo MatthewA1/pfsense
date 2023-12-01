@@ -2327,6 +2327,7 @@ function system_ntp_configure() {
 	$driftfile = "/var/db/ntpd.drift";
 	$statsdir = "/var/log/ntp";
 	$gps_device = '/dev/gps0';
+	$ntp_key = "1";
 
 	safe_mkdir($statsdir);
 
@@ -2356,7 +2357,8 @@ function system_ntp_configure() {
 
 	/* set NTP server authentication key */
 	if (config_get_path('ntpd/serverauth') == 'yes') {
-		$ntpkeyscfg = "1 " . strtoupper(config_get_path('ntpd/serverauthalgo')) . " " . base64_decode(config_get_path('ntpd/serverauthkey')) . "\n";
+		$ntp_key = "12345";
+		$ntpkeyscfg = $ntp_key . " " . strtoupper(config_get_path('ntpd/serverauthalgo')) . " " . base64_decode(config_get_path('ntpd/serverauthkey')) . "\n";
 		if (!@file_put_contents("{$g['varetc_path']}/ntp.keys", $ntpkeyscfg)) {
 			log_error(sprintf(gettext("Could not open %s/ntp.keys for writing"), g_get('varetc_path')));
 			return;
@@ -2373,9 +2375,9 @@ function system_ntp_configure() {
 	if (config_get_path('ntpd/serverauth') == 'yes') {
 		$ntpcfg .= "# Authentication settings \n";
 		$ntpcfg .= "keys /var/etc/ntp.keys \n";
-		$ntpcfg .= "trustedkey 1 \n";
-		$ntpcfg .= "requestkey 1 \n";
-		$ntpcfg .= "controlkey 1 \n";
+		$ntpcfg .= "trustedkey " . $ntp_key . " \n";
+		$ntpcfg .= "requestkey " . $ntp_key . " \n";
+		$ntpcfg .= "controlkey " . $ntp_key . " \n";
 		$ntpcfg .= "\n";
 	}
 
@@ -2551,6 +2553,9 @@ function system_ntp_configure() {
 		}
 		if (substr_count(config_get_path('ntpd/noselect'), $ts)) {
 			$ntpcfg .= ' noselect';
+		}
+		if (config_get_path('ntpd/serverauth') == 'yes') {
+			$ntpcfg .= " key " . $ntp_key . " ";
 		}
 		$ntpcfg .= "\n";
 	}
