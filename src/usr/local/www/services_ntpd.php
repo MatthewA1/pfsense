@@ -374,6 +374,13 @@ for ($counter=0; $counter < $maxrows; $counter++) {
 		$ntp_server_types
 	 ))->sethelp('Type')->setWidth(2);
 
+	// $group->add(new Form_Select(
+	// 	'servauthkey' . $counter,
+	// 	null,
+	// 	,
+	// 	$ntp_auth_keyid
+	// ))
+
 	$group->add(new Form_Button(
 		'deleterow' . $counter,
 		'Delete',
@@ -564,6 +571,7 @@ $section->addInput(new Form_Checkbox(
 	    'which protects against man-in-the-middle attacks.');
 
 $group = new Form_Group('Authentication key');
+// $group->addClass('repeatable');
 $group->addClass('ntpserverauth');
 
 $group->add(new Form_Input(
@@ -572,7 +580,7 @@ $group->add(new Form_Input(
 	null,
 	$pconfig['serverauthkeyid'],
 	['placeholder' => 'Key ID', 'type' => 'number', 'min' => 1, 'max' => 65535, 'step' => 1]
-))->setWidth(2)->setHelp('ID associated with the authentication key');
+))->setWidth(2);
 
 $group->add(new Form_Input(
 	'serverauthkey',
@@ -580,12 +588,7 @@ $group->add(new Form_Input(
 	'text',
 	base64_decode($pconfig['serverauthkey']),
 	['placeholder' => 'NTP Authentication key']
-))->setHelp(
-	'Key format: %1$s MD5 - The key is 1 to 20 printable characters %1$s' .
-	'SHA1 - The key is a hex-encoded ASCII string of 40 characters %1$s' .
-	'SHA256 - The key is a hex-encoded ASCII string of 64 characters',
-	'<br />'
-);
+));
 
 $group->add(new Form_Select(
 	'serverauthalgo',
@@ -595,6 +598,37 @@ $group->add(new Form_Select(
 ))->setWidth(2)->setHelp('Digest algorithm');
 
 $section->add($group);
+
+$group = new Form_Group('');
+
+$group->add(new Form_StaticText(
+	null,
+	null
+))->setWidth(2)->setHelp('ID associated with the authentication key');
+
+$group->add(new Form_StaticText(
+	null,
+	null
+))->setHelp(
+	'Key format: %1$s MD5 - The key is 1 to 20 printable characters %1$s' .
+	'SHA1 - The key is a hex-encoded ASCII string of 40 characters %1$s' .
+	'SHA256 - The key is a hex-encoded ASCII string of 64 characters',
+	'<br />'
+);
+
+$group->add(new Form_StaticText(
+	null,
+	null
+))->setWidth(2)->setHelp('Digest algorithm');
+
+$section->add($group);
+
+// $section->addInput(new Form_Button(
+// 	'addrow',
+// 	'Add',
+// 	null,
+// 	'fa-solid fa-plus'
+// ))->addClass('btn-success');
 
 $form->add($section);
 
